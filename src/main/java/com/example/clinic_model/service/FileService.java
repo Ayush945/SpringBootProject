@@ -19,4 +19,10 @@ public interface FileService {
 
     //Get doctor profile pic
     ImageDownloadDTO getDoctorProfilePic(Long doctorId);
+
+    //upload image of report
+    ImageDTO uploadReportPic(Long doctorId,ImageDTO imageDTO);
+
+    //Get Report pic
+    ImageDownloadDTO getReportPic(Long doctorId);
 }

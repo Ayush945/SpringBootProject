@@ -1,6 +1,8 @@
 package com.example.clinic_model.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,14 +24,18 @@ public class Report {
     @Lob
     private byte[] reportFile;
 
-
-
     @ManyToOne
-    @JoinColumn(name = "patient_ids")
+    @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    @OneToOne(mappedBy = "report")
+    @JsonBackReference
+    private Image image;
+
+
+
     @ManyToOne
-    @JoinColumn(name = "doctor_ids")
+    @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
 }

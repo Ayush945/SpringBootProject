@@ -1,12 +1,10 @@
 package com.example.clinic_model.service.impl;
 
-import com.example.clinic_model.dto.DoctorDTO;
-import com.example.clinic_model.dto.ImageDTO;
-import com.example.clinic_model.dto.ImageDownloadDTO;
-import com.example.clinic_model.dto.PatientDTO;
+import com.example.clinic_model.dto.*;
 import com.example.clinic_model.model.Doctor;
 import com.example.clinic_model.model.Image;
 import com.example.clinic_model.model.Patient;
+import com.example.clinic_model.model.Report;
 import com.example.clinic_model.repository.DoctorRepository;
 import com.example.clinic_model.repository.ImageRepository;
 import com.example.clinic_model.repository.PatientRepository;
@@ -14,6 +12,7 @@ import com.example.clinic_model.repository.ReportRepository;
 import com.example.clinic_model.service.DoctorService;
 import com.example.clinic_model.service.FileService;
 import com.example.clinic_model.service.PatientService;
+import com.example.clinic_model.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -57,6 +56,9 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     private ReportRepository reportRepository;
+
+    @Autowired
+    private ReportService reportService;
 
     //upload file test
     @Override
@@ -151,6 +153,47 @@ public class FileServiceImpl implements FileService {
     @Override
     public ImageDownloadDTO getDoctorProfilePic(Long doctorId) {
         Image image=this.imageRepository.findByDoctorDoctorId(doctorId)
+                .orElseThrow(()->new RuntimeException("Image not found"));
+        try{
+            MediaType mediaType=this.getMediaType(image.getFileName());
+            Resource resource=new UrlResource(this.generatedFilePath(image.getFileName()).toUri());
+            return new ImageDownloadDTO(resource,mediaType);
+        }
+        catch (IOException exception){
+            throw new RuntimeException("File read error");
+        }
+    }
+
+    //upload report pic
+    @Override
+    public ImageDTO uploadReportPic(Long reportId, ImageDTO imageDTO) {
+        ReportDTO reportDTO=this.reportService.getReportById(reportId);
+        Report report =modelMapper.map(reportDTO,Report.class);
+
+        MultipartFile file=imageDTO.getImage();
+        if(file.isEmpty()) throw new RuntimeException("File not found");
+        if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
+        String fileName =this.generateFileName(file);
+        Image savedImage;
+
+        try{
+            System.out.println("hello there");
+            Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("bye there");
+            savedImage=this.imageRepository.save(new Image(fileName));
+            savedImage.setReport(report);
+
+        }
+        catch (IOException exception){
+            throw new RuntimeException("File upload Error");
+        }
+        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
+    }
+
+    //to get report pic
+    @Override
+    public ImageDownloadDTO getReportPic(Long reportId) {
+        Image image=this.imageRepository.findByReportReportId(reportId)
                 .orElseThrow(()->new RuntimeException("Image not found"));
         try{
             MediaType mediaType=this.getMediaType(image.getFileName());

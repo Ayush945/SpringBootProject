@@ -19,4 +19,6 @@ public class ImageDTO {
 
     private PatientDTO patientDTO;
     private DoctorDTO doctorDTO;
+
+    private ReportDTO reportDTO;
 }
