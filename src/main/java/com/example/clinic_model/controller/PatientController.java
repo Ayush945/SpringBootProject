@@ -63,4 +63,9 @@ public class PatientController {
                 .contentType(imageDownloadDTO.getMediaType())
                 .body(imageDownloadDTO.getResource());
     }
+
+    @GetMapping("/search-patient/{firstChar}")
+    ResponseEntity<List<PatientDTO>>searchPatientStartingWith(@PathVariable("firstChar") String firstChar){
+        return ResponseEntity.ok( ).body(patientService.searchPatientStartingWith(firstChar));
+    }
 }

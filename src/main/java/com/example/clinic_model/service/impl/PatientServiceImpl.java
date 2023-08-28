@@ -6,6 +6,7 @@ import com.example.clinic_model.exception.ResourceNotFoundException;
 import com.example.clinic_model.model.Patient;
 import com.example.clinic_model.repository.PatientRepository;
 import com.example.clinic_model.service.PatientService;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,7 +95,12 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public ImageDTO uploadProfilePic(Long patientId, ImageDTO imageDTO) {
-        return null;
+    public List<PatientDTO> searchPatientStartingWith(String firstChar) {
+
+        List<Patient> patients=patientRepository.findByPatientNameStartingWith(firstChar.toUpperCase());
+        return patients.stream()
+                .map(patient -> modelMapper.map(patient, PatientDTO.class))
+                .collect(Collectors.toList());
+
     }
 }

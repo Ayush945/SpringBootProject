@@ -71,7 +71,7 @@ public class DoctorController {
                 .body(imageDownloadDTO.getResource());
     }
 
-
+    //get list of unverified doctor
     @GetMapping("list-unverified-doctor")
     public List<DoctorDTO> getUnverifiedDoctors() {
         return doctorService.getUnverifiedDoctor();

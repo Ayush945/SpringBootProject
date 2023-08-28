@@ -11,6 +11,5 @@ public interface PatientService {
     PatientDTO getPatientById(Long patientId);
     PatientDTO updatePatient(Long patientId, PatientDTO patientDTO);
     void deletePatientById(Long patientId);
-
-    ImageDTO uploadProfilePic(Long patientId, ImageDTO imageDTO);
+    List<PatientDTO> searchPatientStartingWith(String firstChar);
 }
