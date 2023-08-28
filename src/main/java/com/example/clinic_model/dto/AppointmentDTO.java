@@ -26,8 +26,6 @@ public class AppointmentDTO {
     @NotBlank(message = "Appointment description cannot be blank")
     private String appointmentDescription;
 
-    @Future(message = "Appointment follow-up date and time must be in the future")
-    private LocalDate followUpDateAndTime;
 
     private String category;
 
