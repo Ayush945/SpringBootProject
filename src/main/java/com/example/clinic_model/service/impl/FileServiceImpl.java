@@ -170,6 +170,7 @@ public class FileServiceImpl implements FileService {
         ReportDTO reportDTO=this.reportService.getReportById(reportId);
         Report report =modelMapper.map(reportDTO,Report.class);
 
+
         MultipartFile file=imageDTO.getImage();
         if(file.isEmpty()) throw new RuntimeException("File not found");
         if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
@@ -192,8 +193,11 @@ public class FileServiceImpl implements FileService {
 
     //to get report pic
     @Override
-    public ImageDownloadDTO getReportPic(Long reportId) {
-        Image image=this.imageRepository.findByReportReportId(reportId)
+    public ImageDownloadDTO getReportPic(Long patientId) {
+        Report report=reportRepository.findByPatientPatientId(patientId)
+                .orElseThrow(()->new RuntimeException("Image not found"));
+
+        Image image=this.imageRepository.findByReportReportId(report.getReportId())
                 .orElseThrow(()->new RuntimeException("Image not found"));
         try{
             MediaType mediaType=this.getMediaType(image.getFileName());

@@ -37,34 +37,36 @@ public class ReportController {
         return ResponseEntity.ok(reportDTO);
     }
 
-//    @PostMapping
-//    public ResponseEntity<ReportDTO> createReport(@RequestBody ReportDTO reportDTO) {
-//        ReportDTO createdReport = reportService.createReport(reportDTO);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
-//    }
-
-    @PostMapping("/create-report/patient/{patientId}/doctor/{doctorId}")
-    public ResponseEntity<ReportDTO> createReportForPatientAndDoctor(@Valid @RequestBody ReportDTO reportDTO,
-                                                                     @PathVariable("patientId") Long patientId,
-                                                                     @PathVariable("doctorId") Long doctorId)
-    {
-        ReportDTO createdReport = this.reportService.createReportForPatientAndDoctor(reportDTO, patientId, doctorId);
+    @PostMapping("/create-report/{patientId}")
+    public ResponseEntity<ReportDTO> createReport(@PathVariable("patientId") Long patientId) {
+        ReportDTO createdReport = reportService.createReport(patientId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
     }
+
+//    @PostMapping("/create-report/patient/{patientId}/doctor/{doctorId}")
+//    public ResponseEntity<ReportDTO> createReportForPatientAndDoctor(@Valid @RequestBody ReportDTO reportDTO,
+//                                                                     @PathVariable("patientId") Long patientId,
+//                                                                     @PathVariable("doctorId") Long doctorId)
+//    {
+//        ReportDTO createdReport = this.reportService.createReportForPatientAndDoctor(reportDTO, patientId, doctorId);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ReportDTO> updateReport(@PathVariable Long id, @RequestBody ReportDTO reportDTO) {
         ReportDTO updatedReport = reportService.updateReport(id, reportDTO);
         return ResponseEntity.ok(updatedReport);
     }
+
+    //upload report pic
     @PostMapping("/upload-report-pic/{reportId}")
     ResponseEntity<ImageDTO>uploadReportPic(@PathVariable("reportId")Long reportId,@ModelAttribute ImageDTO imageDTO){
         return ResponseEntity.ok().body(fileService.uploadReportPic(reportId,imageDTO));
     }
 
-    @GetMapping("/get-report-pic/{reportId}")
-    ResponseEntity<Resource> getProfilePic(@PathVariable("reportId") Long reportId){
-        ImageDownloadDTO imageDownloadDTO=this.fileService.getReportPic(reportId);
+    @GetMapping("/get-report-pic/{patientId}")
+    ResponseEntity<Resource> getProfilePic(@PathVariable("patientId") Long patientId){
+        ImageDownloadDTO imageDownloadDTO=this.fileService.getReportPic(patientId);
         return ResponseEntity.ok()
                 .contentType(imageDownloadDTO.getMediaType())
                 .body(imageDownloadDTO.getResource());

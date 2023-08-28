@@ -22,7 +22,6 @@ public class Appointment
     private LocalTime appointmentTime;
     private String appointmentDescription;
     private String appointmentStatus;
-    private LocalDate followUpDateAndTime;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")

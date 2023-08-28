@@ -5,6 +5,7 @@ import com.example.clinic_model.dto.PatientDTO;
 import com.example.clinic_model.dto.ReportDTO;
 import com.example.clinic_model.exception.ResourceNotFoundException;
 import com.example.clinic_model.model.Doctor;
+import com.example.clinic_model.model.Image;
 import com.example.clinic_model.model.Patient;
 import com.example.clinic_model.model.Report;
 import com.example.clinic_model.repository.ReportRepository;
@@ -50,8 +51,12 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public ReportDTO createReport(ReportDTO reportDTO) {
-        Report report = modelMapper.map(reportDTO, Report.class);
+    public ReportDTO createReport(Long patientId) {
+        Report report=new Report();
+        PatientDTO patientDTO = this.patientService.getPatientById(patientId);
+        Patient patient = this.modelMapper.map(patientDTO, Patient.class);
+
+        report.setPatient(patient);
         report = reportRepository.save(report);
         return modelMapper.map(report, ReportDTO.class);
     }

@@ -5,7 +5,7 @@ import com.example.clinic_model.dto.ReportDTO;
 import java.util.List;
 
 public interface ReportService {
-    ReportDTO createReport(ReportDTO reportDTO);
+    ReportDTO createReport(Long patientId);
 
     ReportDTO createReportForPatientAndDoctor(ReportDTO reportDTO, Long patientId, Long doctorId);
 
