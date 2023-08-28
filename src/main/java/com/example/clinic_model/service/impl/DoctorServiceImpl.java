@@ -86,4 +86,14 @@ public class DoctorServiceImpl implements DoctorService {
         }
         doctorRepository.deleteById(doctorId);
     }
+
+    @Override
+    public List<DoctorDTO> getUnverifiedDoctor() {
+        List<Doctor> doctors = doctorRepository.findAll();
+
+        return doctors.stream()
+                .filter(doctor -> !doctor.isVerified()) // Filter out the verified doctors
+                .map(doctor -> modelMapper.map(doctor, DoctorDTO.class))
+                .collect(Collectors.toList());
+    }
 }

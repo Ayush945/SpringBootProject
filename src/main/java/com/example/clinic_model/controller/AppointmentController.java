@@ -41,13 +41,13 @@ public class AppointmentController {
 
     //for patient to look at his list of appointment
     @PreAuthorize("hasAuthority('ROLE_PATIENT')")
-    @GetMapping("/{patientId}")
+    @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<AppointmentDTO>>getAppointmentByPatientId(@PathVariable Long patientId) {
         List<AppointmentDTO> appointmentDTO = appointmentService.getAppointmentByPatientId(patientId);
         return ResponseEntity.ok(appointmentDTO);
     }
     @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
-    @GetMapping("/{doctorId}")
+    @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<List<AppointmentDTO>>getAppointmentByDoctorId(@PathVariable Long doctorId) {
         List<AppointmentDTO> appointmentDTO = appointmentService.getAppointmentByDoctorId(doctorId);
         return ResponseEntity.ok(appointmentDTO);

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -48,6 +49,7 @@ public class ReportController {
     ResponseEntity<ImageDTO>uploadReportPic(@PathVariable("reportId")Long reportId,@ModelAttribute ImageDTO imageDTO){
         return ResponseEntity.ok().body(fileService.uploadReportPic(reportId,imageDTO));
     }
+
 
     @GetMapping("/get-report-pic/{patientId}")
     ResponseEntity<Resource> getProfilePic(@PathVariable("patientId") Long patientId){

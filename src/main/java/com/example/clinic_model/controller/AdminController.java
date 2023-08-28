@@ -1,6 +1,7 @@
 package com.example.clinic_model.controller;
 
 import com.example.clinic_model.dto.AdminDTO;
+import com.example.clinic_model.dto.DoctorDTO;
 import com.example.clinic_model.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,4 +29,6 @@ public class AdminController {
         AdminDTO updatedAdmin = this.adminService.updateAdmin(adminId, adminDTO);
         return ResponseEntity.ok(updatedAdmin);
     }
+
+
 }

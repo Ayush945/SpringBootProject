@@ -8,4 +8,5 @@ public interface AdminService {
 
     AdminDTO updateAdmin(Long adminId, AdminDTO adminDTO);
 
+
 }

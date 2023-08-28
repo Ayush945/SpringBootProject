@@ -70,4 +70,10 @@ public class DoctorController {
                 .contentType(imageDownloadDTO.getMediaType())
                 .body(imageDownloadDTO.getResource());
     }
+
+
+    @GetMapping("list-unverified-doctor")
+    public List<DoctorDTO> getUnverifiedDoctors() {
+        return doctorService.getUnverifiedDoctor();
+    }
 }
