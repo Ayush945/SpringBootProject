@@ -18,16 +18,17 @@ public class MockAuthentication {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping("register")
+    @PostMapping("patient-register")
     public ResponseEntity<PatientDTO> registerAsStudent(@RequestBody PatientDTO patientDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerAsPatient(patientDTO));
     }
-    @PostMapping("registers")
+
+    @PostMapping("doctor-register")
     public ResponseEntity<DoctorDTO> registerAsDoctor(@RequestBody DoctorDTO doctorDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerAsDoctor(doctorDTO));
     }
-    @PostMapping("verify")
-    public ResponseEntity<String> verifyOtp(@RequestBody int otp) {
+    @PostMapping("patient-otp-verify")
+    public ResponseEntity<String> verifyPatientOtp(@RequestBody int otp) {
         try {
             authenticationService.verifyOTP(otp);
             return ResponseEntity.status(HttpStatus.OK).body("OTP verification successful");
@@ -42,8 +43,8 @@ public class MockAuthentication {
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @GetMapping("admin")
-    public ResponseEntity<String> onlyAdmin() {
-        return ResponseEntity.ok().body("Only Admin");
+    @PostMapping("doctor-verify/{doctorId}")
+    public ResponseEntity<DoctorDTO> doctorVerify(@PathVariable Long doctorId) {
+        return ResponseEntity.ok().body(authenticationService.verifyDoctor(doctorId));
     }
 }

@@ -81,6 +81,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } else if (admin.isPresent()) {
             return loginAsAdmin(username, password);
         } else if (doctor.isPresent()) {
+            Doctor doctorEntity=doctor.get();
+            if(!doctorEntity.isVerified()){
+                throw new LoginException(("NOT VERIFIED DOCTOR"));
+            }
             return loginAsDoctor(username, password);
         } else {
             throw new LoginException("User not found");
@@ -271,6 +275,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         otpPatient.setVerified(true);
         otpPatient.setOtp(0);
         patientRepository.save(otpPatient);
+    }
+
+    public DoctorDTO verifyDoctor(Long doctorId ){
+        Optional<Doctor> doctorGet= this.doctorRepository.findById(doctorId);
+        Doctor verifyDoctor=doctorGet.get();
+        verifyDoctor.setVerified(true);
+        doctorRepository.save(verifyDoctor);
+        return modelMapper.map(verifyDoctor,DoctorDTO.class);
     }
 }
 

@@ -22,7 +22,11 @@ public class Appointment
     private LocalTime appointmentTime;
     private String appointmentDescription;
     private String appointmentStatus;
-
+    private String category;
+    private String name;
+    private String email;
+    private Long phoneNumber;
+    private LocalDate dateOfBirth;
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;

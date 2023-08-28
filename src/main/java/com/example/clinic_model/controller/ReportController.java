@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,9 +32,9 @@ public class ReportController {
         return reportService.getAllReports();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ReportDTO> getReportById(@PathVariable Long id) {
-        ReportDTO reportDTO = reportService.getReportById(id);
+    @GetMapping("/{reportId}")
+    public ResponseEntity<ReportDTO> getReportById(@PathVariable Long reportId) {
+        ReportDTO reportDTO = reportService.getReportById(reportId);
         return ResponseEntity.ok(reportDTO);
     }
 
@@ -43,26 +44,12 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
     }
 
-//    @PostMapping("/create-report/patient/{patientId}/doctor/{doctorId}")
-//    public ResponseEntity<ReportDTO> createReportForPatientAndDoctor(@Valid @RequestBody ReportDTO reportDTO,
-//                                                                     @PathVariable("patientId") Long patientId,
-//                                                                     @PathVariable("doctorId") Long doctorId)
-//    {
-//        ReportDTO createdReport = this.reportService.createReportForPatientAndDoctor(reportDTO, patientId, doctorId);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
-//    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ReportDTO> updateReport(@PathVariable Long id, @RequestBody ReportDTO reportDTO) {
-        ReportDTO updatedReport = reportService.updateReport(id, reportDTO);
-        return ResponseEntity.ok(updatedReport);
-    }
-
     //upload report pic
     @PostMapping("/upload-report-pic/{reportId}")
     ResponseEntity<ImageDTO>uploadReportPic(@PathVariable("reportId")Long reportId,@ModelAttribute ImageDTO imageDTO){
         return ResponseEntity.ok().body(fileService.uploadReportPic(reportId,imageDTO));
     }
+
 
     @GetMapping("/get-report-pic/{patientId}")
     ResponseEntity<Resource> getProfilePic(@PathVariable("patientId") Long patientId){
@@ -70,11 +57,5 @@ public class ReportController {
         return ResponseEntity.ok()
                 .contentType(imageDownloadDTO.getMediaType())
                 .body(imageDownloadDTO.getResource());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
-        reportService.deleteReport(id);
-        return ResponseEntity.noContent().build();
     }
 }

@@ -11,4 +11,5 @@ public interface DoctorRepository extends JpaRepository<Doctor,Long> {
     Optional<Doctor> findByUsername(String username);
     @Query("SELECT COUNT(*) FROM Doctor")
     Integer countAllDoctor();
+
 }

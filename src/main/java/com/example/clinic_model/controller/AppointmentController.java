@@ -5,6 +5,7 @@ import com.example.clinic_model.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,7 +21,9 @@ public class AppointmentController {
     public AppointmentController(AppointmentService appointmentService) {
         this.appointmentService = appointmentService;
     }
+    //create appointment using both doctor and patient
 
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     @PostMapping("/patient/{patientId}/doctor/{doctorId}")
     public ResponseEntity<AppointmentDTO> createAppointment(@Valid @RequestBody AppointmentDTO appointmentDTO,
                                                             @PathVariable("patientId") Long patientId,
@@ -29,35 +32,34 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAppointment);
     }
 
-    @GetMapping
+    //for admin to look at list of appointment
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/get-all-appointments")
     public List<AppointmentDTO> getAllAppointments() {
         return appointmentService.getAllAppointments();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
-        AppointmentDTO appointmentDTO = appointmentService.getAppointmentById(id);
+    //for patient to look at his list of appointment
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<AppointmentDTO>>getAppointmentByPatientId(@PathVariable Long patientId) {
+        List<AppointmentDTO> appointmentDTO = appointmentService.getAppointmentByPatientId(patientId);
+        return ResponseEntity.ok(appointmentDTO);
+    }
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<List<AppointmentDTO>>getAppointmentByDoctorId(@PathVariable Long doctorId) {
+        List<AppointmentDTO> appointmentDTO = appointmentService.getAppointmentByDoctorId(doctorId);
         return ResponseEntity.ok(appointmentDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id,
-                                                            @RequestBody AppointmentDTO appointmentDTO) {
-        AppointmentDTO updatedAppointment = appointmentService.updateAppointment(id, appointmentDTO);
-        return ResponseEntity.ok(updatedAppointment);
-    }
-
-    @DeleteMapping("/{id}")
+    //to delete appointment
+    @PreAuthorize("hasAuthority('ROLE_PATIENT")
+    @DeleteMapping("/{patientId}/{appointmentId}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointmentById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/get/{patientId}/{doctorId}")
-    public ResponseEntity<List<AppointmentDTO>> getByPatientIdAndDoctorId(@PathVariable("patientId") Long patientId,
-                                                                          @PathVariable("doctorId") Long doctorId)
-    {
-        return ResponseEntity.ok(this.appointmentService.findAppointment(patientId, doctorId));
 
-    }
 }

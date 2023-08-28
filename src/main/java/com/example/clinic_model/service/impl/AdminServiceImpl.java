@@ -22,27 +22,6 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Override
-    public AdminDTO createAdmin(AdminDTO adminDTO) {
-        Admin admin = modelMapper.map(adminDTO, Admin.class);
-        admin = adminRepository.save(admin);
-        return modelMapper.map(admin, AdminDTO.class);
-    }
-
-    @Override
-    public List<AdminDTO> getAllAdmins() {
-        List<Admin> admins = adminRepository.findAll();
-        return admins.stream()
-                .map(admin -> modelMapper.map(admin, AdminDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public AdminDTO getAdminById(Long adminId) {
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new ResourceNotFoundException("Admin not found!"));
-        return modelMapper.map(admin, AdminDTO.class);
-    }
 
     @Override
     public AdminDTO updateAdmin(Long adminId, AdminDTO adminDTO) {
@@ -72,13 +51,5 @@ public class AdminServiceImpl implements AdminService {
         Admin updatedAdmin = adminRepository.save(existingAdmin);
 
         return modelMapper.map(updatedAdmin, AdminDTO.class);
-    }
-
-    @Override
-    public void deleteAdminById(Long adminId) {
-        if (!adminRepository.existsById(adminId))
-            throw new ResourceNotFoundException("Admin not found!");
-
-        adminRepository.deleteById(adminId);
     }
 }
