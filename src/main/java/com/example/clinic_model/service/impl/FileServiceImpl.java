@@ -1,18 +1,12 @@
 package com.example.clinic_model.service.impl;
 
 import com.example.clinic_model.dto.*;
-import com.example.clinic_model.model.Doctor;
-import com.example.clinic_model.model.Image;
-import com.example.clinic_model.model.Patient;
-import com.example.clinic_model.model.Report;
+import com.example.clinic_model.model.*;
 import com.example.clinic_model.repository.DoctorRepository;
 import com.example.clinic_model.repository.ImageRepository;
 import com.example.clinic_model.repository.PatientRepository;
 import com.example.clinic_model.repository.ReportRepository;
-import com.example.clinic_model.service.DoctorService;
-import com.example.clinic_model.service.FileService;
-import com.example.clinic_model.service.PatientService;
-import com.example.clinic_model.service.ReportService;
+import com.example.clinic_model.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -48,6 +42,9 @@ public class FileServiceImpl implements FileService {
     private ImageRepository imageRepository;
     @Autowired
     private DoctorService doctorService;
+    @Autowired
+    private NewsService newsService;
+
     @Autowired
     private PatientRepository patientRepository;
 
@@ -107,10 +104,50 @@ public class FileServiceImpl implements FileService {
         return ImageDTO.builder().imageId(savedImage.getImageId()).build();
     }
 
+//    Upload News Image
+   @Override
+    public ImageDTO uploadNewsImage(Long newsID,ImageDTO imageDTO) {
+        //getting patient
+        NewsDTO newsDTO=this.newsService.getNewsById(newsID);
+        News news=modelMapper.map(newsDTO,News.class);
+
+        MultipartFile file=imageDTO.getImage();
+        if(file.isEmpty()) throw new RuntimeException("File not found");
+        if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
+        String fileName =this.generateFileName(file);
+        Image savedImage;
+
+        try{
+            Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            savedImage=this.imageRepository.save(new Image(fileName));
+            System.out.println(savedImage);
+            savedImage.setNews(news);
+            System.out.println(savedImage);
+        }
+        catch (IOException exception){
+            throw new RuntimeException("File upload Error");
+        }
+        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
+    }
+
     //get patient profile pic
     @Override
     public ImageDownloadDTO getPatientProfilePic(Long patientId) {
         Image image=this.imageRepository.findByPatientPatientId(patientId)
+                .orElseThrow(()->new RuntimeException("Image not found"));
+        try{
+            MediaType mediaType=this.getMediaType(image.getFileName());
+            Resource resource=new UrlResource(this.generatedFilePath(image.getFileName()).toUri());
+            return new ImageDownloadDTO(resource,mediaType);
+        }
+        catch (IOException exception){
+            throw new RuntimeException("File read error");
+        }
+    }
+
+//    Get News Image
+    public ImageDownloadDTO getNewsImage(Long newsId) {
+        Image image=this.imageRepository.findByNewsNewsId(newsId)
                 .orElseThrow(()->new RuntimeException("Image not found"));
         try{
             MediaType mediaType=this.getMediaType(image.getFileName());

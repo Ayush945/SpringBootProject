@@ -51,7 +51,7 @@ public class PatientController {
     //to add patient profile pic
     @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     @PostMapping("/upload-patient-profile-pic/{patientId}")
-    ResponseEntity<ImageDTO> updatePatient(@PathVariable("patientId") Long patientId ,@ModelAttribute ImageDTO imageDTO){
+    ResponseEntity<ImageDTO> uploadPatientProfilePic(@PathVariable("patientId") Long patientId ,@ModelAttribute ImageDTO imageDTO){
 
         return  ResponseEntity.ok().body(fileService.uploadPatientProfilePic(patientId,imageDTO));
     }

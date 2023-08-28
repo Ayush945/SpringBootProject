@@ -21,4 +21,6 @@ public class ImageDTO {
     private DoctorDTO doctorDTO;
 
     private ReportDTO reportDTO;
+
+    private NewsDTO newsDTO;
 }

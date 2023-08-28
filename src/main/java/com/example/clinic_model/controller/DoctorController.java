@@ -58,13 +58,13 @@ public class DoctorController {
 
     @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     @PostMapping("/upload-doctor-profile-pic/{doctorId}")
-    ResponseEntity<ImageDTO> updatePatient(@PathVariable("doctorId") Long doctorId , @ModelAttribute ImageDTO imageDTO){
+    ResponseEntity<ImageDTO> uploadDoctorProfilePic(@PathVariable("doctorId") Long doctorId , @ModelAttribute ImageDTO imageDTO){
 
         return  ResponseEntity.ok().body(fileService.uploadDoctorProfilePic(doctorId,imageDTO));
     }
     //get doctor profile pic
     @GetMapping("/get-doctor-profile-pic/{doctorId}")
-    ResponseEntity<Resource> getProfilePic(@PathVariable("doctorId") Long doctorId){
+    ResponseEntity<Resource> getDoctorProfilePic(@PathVariable("doctorId") Long doctorId){
         ImageDownloadDTO imageDownloadDTO=this.fileService.getDoctorProfilePic(doctorId);
         return ResponseEntity.ok()
                 .contentType(imageDownloadDTO.getMediaType())
