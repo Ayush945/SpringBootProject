@@ -26,11 +26,15 @@ public class AppointmentDTO {
     @NotBlank(message = "Appointment description cannot be blank")
     private String appointmentDescription;
 
-    @NotNull(message = "Missing appointment status")
-    private String appointmentStatus;
-
     @Future(message = "Appointment follow-up date and time must be in the future")
     private LocalDate followUpDateAndTime;
+
+    private String category;
+
+    private String name;
+    private String email;
+    private Long phoneNumber;
+    private LocalDate dateOfBirth;
 
     //relations
     private DoctorDTO doctor; // Update field name to doctor_id

@@ -27,6 +27,7 @@ public class Doctor extends User
     private String specialization;
     private final RoleEnum role = RoleEnum.ROLE_DOCTOR;
     private Long doctorLicense;
+    private String doctorBio;
 
 
     @OneToMany(mappedBy = "doctor")
@@ -49,4 +50,6 @@ public class Doctor extends User
     @OneToOne(mappedBy = "doctor")
     @JsonBackReference
     private Image image;
+
+    private boolean isVerified=false;
 }

@@ -5,6 +5,7 @@ import com.example.clinic_model.dto.PatientDTO;
 import com.example.clinic_model.dto.ReportDTO;
 import com.example.clinic_model.exception.ResourceNotFoundException;
 import com.example.clinic_model.model.Doctor;
+import com.example.clinic_model.model.Image;
 import com.example.clinic_model.model.Patient;
 import com.example.clinic_model.model.Report;
 import com.example.clinic_model.repository.ReportRepository;
@@ -50,58 +51,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public ReportDTO createReport(ReportDTO reportDTO) {
-        Report report = modelMapper.map(reportDTO, Report.class);
-        report = reportRepository.save(report);
-        return modelMapper.map(report, ReportDTO.class);
-    }
-
-    @Override
-    public ReportDTO createReportForPatientAndDoctor(ReportDTO reportDTO, Long patientId, Long doctorId) {
-        Report report = this.modelMapper.map(reportDTO, Report.class);
-
+    public ReportDTO createReport(Long patientId) {
+        Report report=new Report();
         PatientDTO patientDTO = this.patientService.getPatientById(patientId);
         Patient patient = this.modelMapper.map(patientDTO, Patient.class);
 
-        DoctorDTO doctorDTO = this.doctorService.getDoctorById(doctorId);
-        Doctor doctor = this.modelMapper.map(doctorDTO, Doctor.class);
-
         report.setPatient(patient);
-        report.setDoctor(doctor);
-
-        Report savedReport = this.reportRepository.save(report);
-
-        return this.modelMapper.map(report, ReportDTO.class);
-    }
-
-    @Override
-    public ReportDTO updateReport(Long reportId, ReportDTO reportDTO) {
-        Optional<Report> optionalReport = reportRepository.findById(reportId);
-
-        if (optionalReport.isEmpty()) {
-            throw new ResourceNotFoundException("Report not found");
-        }
-
-        Report existingReport = optionalReport.get();
-
-        // Update properties from DTO
-        if (reportDTO.getReportDate() != null) {
-            existingReport.setReportDate(reportDTO.getReportDate());
-        }
-        if (reportDTO.getReportFile() != null) {
-            existingReport.setReportFile(reportDTO.getReportFile());
-        }
-
-        // Save the updated report
-        Report updatedReport = reportRepository.save(existingReport);
-
-        return modelMapper.map(updatedReport, ReportDTO.class);
-    }
-    @Override
-    public void deleteReport(Long reportId) {
-        if (!reportRepository.existsById(reportId)) {
-            throw new ResourceNotFoundException("Report not found");
-        }
-        reportRepository.deleteById(reportId);
+        report = reportRepository.save(report);
+        return modelMapper.map(report, ReportDTO.class);
     }
 }

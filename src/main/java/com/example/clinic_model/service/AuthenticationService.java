@@ -15,6 +15,7 @@ public interface AuthenticationService {
     PatientDTO registerAsPatient(PatientDTO patientDTO);
     DoctorDTO registerAsDoctor(DoctorDTO doctorDTO);
     void verifyOTP(int otp);
+    DoctorDTO verifyDoctor(Long doctorId );
 
     UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String username, RoleEnum role);
 }

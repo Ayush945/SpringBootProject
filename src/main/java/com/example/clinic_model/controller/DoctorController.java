@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,36 +27,36 @@ public class DoctorController {
         this.doctorService = doctorService;
     }
 
-    @PostMapping
-    public ResponseEntity<DoctorDTO> createDoctor(@RequestBody DoctorDTO doctorDTO) {
-        DoctorDTO createdDoctor = doctorService.createDoctor(doctorDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdDoctor);
-    }
 
-    @GetMapping
+    @GetMapping("list-all-doctor")
     public List<DoctorDTO> getAllDoctors() {
         return doctorService.getAllDoctors();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable Long id) {
-        DoctorDTO doctorDTO = doctorService.getDoctorById(id);
+
+    @GetMapping("get-doctor/{doctorId}")
+    public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable Long doctorId) {
+        DoctorDTO doctorDTO = doctorService.getDoctorById(doctorId);
         return ResponseEntity.ok(doctorDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DoctorDTO> updateDoctor(@PathVariable Long id, @RequestBody DoctorDTO doctorDTO) {
-        DoctorDTO updatedDoctor = doctorService.updateDoctor(id, doctorDTO);
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
+    @PutMapping("update-doctor/{doctorId}")
+    public ResponseEntity<DoctorDTO> updateDoctor(@PathVariable Long doctorId, @RequestBody DoctorDTO doctorDTO) {
+        DoctorDTO updatedDoctor = doctorService.updateDoctor(doctorId, doctorDTO);
         return ResponseEntity.ok(updatedDoctor);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDoctor(@PathVariable Long id) {
-        doctorService.deleteDoctorById(id);
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @DeleteMapping("/{doctorId}")
+    public ResponseEntity<Void> deleteDoctor(@PathVariable Long doctorId) {
+        doctorService.deleteDoctorById(doctorId);
         return ResponseEntity.noContent().build();
     }
 
     //upload doctor profile pic
+
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     @PostMapping("/upload-doctor-profile-pic/{doctorId}")
     ResponseEntity<ImageDTO> updatePatient(@PathVariable("doctorId") Long doctorId , @ModelAttribute ImageDTO imageDTO){
 

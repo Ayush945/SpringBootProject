@@ -33,6 +33,10 @@ public class DoctorDTO extends UserDTO{
     @NotNull(message = "Doctor license number is required")
     private Long doctorLicense;
 
+    private boolean isVerified=false;
+
+    private String doctorBio;
+
 
     //relations
 //    @JsonBackReference

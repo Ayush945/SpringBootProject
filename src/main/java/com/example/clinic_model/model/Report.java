@@ -21,8 +21,6 @@ public class Report {
 
     private LocalDate reportDate;
 
-    @Lob
-    private byte[] reportFile;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")

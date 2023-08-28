@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,30 +28,28 @@ public class PatientController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<PatientDTO> createPatient(@RequestBody PatientDTO patientDTO) {
-        PatientDTO createdPatient = patientService.createPatient(patientDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPatient);
-    }
 
-    @GetMapping
+    @GetMapping("/get-all-patient")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<PatientDTO> getAllPatients() {
         return patientService.getAllPatients();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PatientDTO> getPatientById(@PathVariable Long id) {
-        PatientDTO patientDTO = patientService.getPatientById(id);
+    @GetMapping("/{patientId}")
+    public ResponseEntity<PatientDTO> getPatientById(@PathVariable Long patientId) {
+        PatientDTO patientDTO = patientService.getPatientById(patientId);
         return ResponseEntity.ok(patientDTO);
     }
     //to update patient profile
-    @PutMapping("/{id}")
-    public ResponseEntity<PatientDTO> updatePatient(@PathVariable Long id, @RequestBody PatientDTO patientDTO) {
-        PatientDTO updatedPatient = patientService.updatePatient(id, patientDTO);
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+    @PutMapping("/{patientId}")
+    public ResponseEntity<PatientDTO> updatePatient(@PathVariable Long patientId, @RequestBody PatientDTO patientDTO) {
+        PatientDTO updatedPatient = patientService.updatePatient(patientId, patientDTO);
         return ResponseEntity.ok(updatedPatient);
     }
 
     //to add patient profile pic
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     @PostMapping("/upload-patient-profile-pic/{patientId}")
     ResponseEntity<ImageDTO> updatePatient(@PathVariable("patientId") Long patientId ,@ModelAttribute ImageDTO imageDTO){
 
@@ -63,13 +62,5 @@ public class PatientController {
         return ResponseEntity.ok()
                 .contentType(imageDownloadDTO.getMediaType())
                 .body(imageDownloadDTO.getResource());
-    }
-
-
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
-        patientService.deletePatientById(id);
-        return ResponseEntity.noContent().build();
     }
 }
