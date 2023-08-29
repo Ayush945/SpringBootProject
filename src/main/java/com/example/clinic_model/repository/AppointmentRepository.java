@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
@@ -15,4 +16,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
     List<Appointment> findByPatientPatientIdAndDoctorDoctorId(Long patientId, Long doctorId);
 
     List<Appointment> findByDoctorDoctorId(Long doctorId);
+
+    List<Appointment> findAllByAppointmentDateBeforeAndDoctorDoctorId(LocalDate date, Long doctorId);
 }

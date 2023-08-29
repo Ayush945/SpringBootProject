@@ -4,9 +4,6 @@ import com.example.clinic_model.dto.ImageDTO;
 import com.example.clinic_model.dto.ImageDownloadDTO;
 
 public interface FileService {
-    ImageDTO uploadFile(ImageDTO imageDTO);
-
-    ImageDownloadDTO downloadFile(Long imageId);
 
     //Upload Patient Profile Pic
     ImageDTO uploadPatientProfilePic(Long patientId,ImageDTO imageDTO);
@@ -21,8 +18,15 @@ public interface FileService {
     ImageDownloadDTO getDoctorProfilePic(Long doctorId);
 
     //upload image of report
-    ImageDTO uploadReportPic(Long patientId,ImageDTO imageDTO);
+    ImageDTO uploadReportPic(Long reportId,ImageDTO imageDTO);
 
     //Get Report pic
-    ImageDownloadDTO getReportPic(Long patientId);
+
+    ImageDownloadDTO getReportPic(Long appointmentId);
+
+    //For News Image
+    ImageDownloadDTO getNewsImage(Long newsId);
+
+    //Upload News Image
+    ImageDTO uploadNewsImage(Long newsID,ImageDTO imageDTO);
 }

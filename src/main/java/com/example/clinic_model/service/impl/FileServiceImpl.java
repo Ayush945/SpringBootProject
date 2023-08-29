@@ -1,18 +1,12 @@
 package com.example.clinic_model.service.impl;
 
 import com.example.clinic_model.dto.*;
-import com.example.clinic_model.model.Doctor;
-import com.example.clinic_model.model.Image;
-import com.example.clinic_model.model.Patient;
-import com.example.clinic_model.model.Report;
+import com.example.clinic_model.model.*;
 import com.example.clinic_model.repository.DoctorRepository;
 import com.example.clinic_model.repository.ImageRepository;
 import com.example.clinic_model.repository.PatientRepository;
 import com.example.clinic_model.repository.ReportRepository;
-import com.example.clinic_model.service.DoctorService;
-import com.example.clinic_model.service.FileService;
-import com.example.clinic_model.service.PatientService;
-import com.example.clinic_model.service.ReportService;
+import com.example.clinic_model.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -49,6 +43,9 @@ public class FileServiceImpl implements FileService {
     @Autowired
     private DoctorService doctorService;
     @Autowired
+    private NewsService newsService;
+
+    @Autowired
     private PatientRepository patientRepository;
 
     @Autowired
@@ -60,51 +57,77 @@ public class FileServiceImpl implements FileService {
     @Autowired
     private ReportService reportService;
 
-    //upload file test
+    //test method->to upload patient profile pic
     @Override
-    public ImageDTO uploadFile(ImageDTO imageDTO) {
-        MultipartFile file=imageDTO.getImage();
-        if(file.isEmpty()) throw new RuntimeException("File not found");
-        if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
-        String fileName =this.generateFileName(file);
+    public ImageDTO uploadPatientProfilePic(Long patientID, ImageDTO imageDTO) {
+        PatientDTO patientDTO = this.patientService.getPatientById(patientID);
+        Patient patient = modelMapper.map(patientDTO, Patient.class);
+
+        MultipartFile file = imageDTO.getImage();
+        if (file.isEmpty()) throw new RuntimeException("File not found");
+        if (!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
+        String fileName = this.generateFileName(file);
         Image savedImage;
-        try{
-            Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-            savedImage=this.imageRepository.save(new Image(fileName));
+
+        try {
+            Files.copy(file.getInputStream(), this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            boolean exists = this.imageRepository.existsByPatientPatientId(patientID);
+            if (exists) {
+                Optional<Image> existingImage = this.imageRepository.findByPatientPatientId(patientID);
+                if (existingImage.isPresent()) {
+                    Image image = existingImage.get();
+                    // Update the image with the new file name
+                    image.setFileName(fileName);
+                    savedImage = this.imageRepository.save(image);
+                } else {
+                    throw new RuntimeException("Existing image not found");
+                }
+            } else {
+                savedImage = this.imageRepository.save(new Image(fileName));
+                savedImage.setPatient(patient);
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException("File upload Error");
         }
-        catch (IOException exception){
+        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
+    }
+    //    Upload News Image
+    @Override
+    public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
+        //getting patient
+        NewsDTO newsDTO = this.newsService.getNewsById(newsID);
+        News news = modelMapper.map(newsDTO, News.class);
+        MultipartFile file = imageDTO.getImage();
+        if (file.isEmpty()) throw new RuntimeException("File not found");
+        if (!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
+        String fileName = this.generateFileName(file);
+        Image savedImage;
+
+        try {
+            Files.copy(file.getInputStream(), this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            boolean exists = this.imageRepository.existsByNewsNewsId(newsID);
+            if (exists) {
+                Optional<Image> existingImage = this.imageRepository.findByNewsNewsId(newsID);
+                if (existingImage.isPresent()) {
+                    Image image = existingImage.get();
+                    // Update the image with the new file name
+                    image.setFileName(fileName);
+                    savedImage = this.imageRepository.save(image);
+                } else {
+                    throw new RuntimeException("Existing image not found");
+                }
+            } else {
+                savedImage = this.imageRepository.save(new Image(fileName));
+                savedImage.setNews(news);
+            }
+        } catch (IOException exception) {
             throw new RuntimeException("File upload Error");
         }
         return ImageDTO.builder().imageId(savedImage.getImageId()).build();
     }
 
-
-    //test method->to upload patient profile pic
-    @Override
-    public ImageDTO uploadPatientProfilePic(Long patientID,ImageDTO imageDTO) {
-        //getting patient
-        PatientDTO patientDTO=this.patientService.getPatientById(patientID);
-        Patient patient=modelMapper.map(patientDTO,Patient.class);
-
-        MultipartFile file=imageDTO.getImage();
-        if(file.isEmpty()) throw new RuntimeException("File not found");
-        if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
-        String fileName =this.generateFileName(file);
-        Image savedImage;
-
-        try{
-            System.out.println("hello there");
-            Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("bye there");
-            savedImage=this.imageRepository.save(new Image(fileName));
-            System.out.println(savedImage);
-            savedImage.setPatient(patient);
-            System.out.println(savedImage);
-        }
-        catch (IOException exception){
-            throw new RuntimeException("File upload Error");
-        }
-        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
+    private void deleteImage(Long imageId) {
+        // Delete image logic here
     }
 
     //get patient profile pic
@@ -122,28 +145,50 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+    //    Get News Image
+    public ImageDownloadDTO getNewsImage(Long newsId) {
+        Image image=this.imageRepository.findByNewsNewsId(newsId)
+                .orElseThrow(()->new RuntimeException("Image not found"));
+        try{
+            MediaType mediaType=this.getMediaType(image.getFileName());
+            Resource resource=new UrlResource(this.generatedFilePath(image.getFileName()).toUri());
+            return new ImageDownloadDTO(resource,mediaType);
+        }
+        catch (IOException exception){
+            throw new RuntimeException("File read error");
+        }
+    }
+
     //upload doctor profile pic
     @Override
     public ImageDTO uploadDoctorProfilePic(Long doctorId, ImageDTO imageDTO) {
-        DoctorDTO doctorDTO=this.doctorService.getDoctorById(doctorId);
-        Doctor doctor=modelMapper.map(doctorDTO,Doctor.class);
+        DoctorDTO doctorDTO = this.doctorService.getDoctorById(doctorId);
+        Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
 
-        MultipartFile file=imageDTO.getImage();
-        if(file.isEmpty()) throw new RuntimeException("File not found");
-        if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
-        String fileName =this.generateFileName(file);
+        MultipartFile file = imageDTO.getImage();
+        if (file.isEmpty()) throw new RuntimeException("File not found");
+        if (!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
+        String fileName = this.generateFileName(file);
         Image savedImage;
 
-        try{
-            System.out.println("hello there");
-            Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("bye there");
-            savedImage=this.imageRepository.save(new Image(fileName));
-
-            savedImage.setDoctor(doctor);
-
-        }
-        catch (IOException exception){
+        try {
+            Files.copy(file.getInputStream(), this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            boolean exists = this.imageRepository.existsByDoctorDoctorId(doctorId);
+            if (exists) {
+                Optional<Image> existingImage = this.imageRepository.findByDoctorDoctorId(doctorId);
+                if (existingImage.isPresent()) {
+                    Image image = existingImage.get();
+                    // Update the image with the new file name
+                    image.setFileName(fileName);
+                    savedImage = this.imageRepository.save(image);
+                } else {
+                    throw new RuntimeException("Existing image not found");
+                }
+            } else {
+                savedImage = this.imageRepository.save(new Image(fileName));
+                savedImage.setDoctor(doctor);
+            }
+        } catch (IOException exception) {
             throw new RuntimeException("File upload Error");
         }
         return ImageDTO.builder().imageId(savedImage.getImageId()).build();
@@ -178,9 +223,7 @@ public class FileServiceImpl implements FileService {
         Image savedImage;
 
         try{
-            System.out.println("hello there");
             Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("bye there");
             savedImage=this.imageRepository.save(new Image(fileName));
             savedImage.setReport(report);
 
@@ -193,12 +236,13 @@ public class FileServiceImpl implements FileService {
 
     //to get report pic
     @Override
-    public ImageDownloadDTO getReportPic(Long patientId) {
-        Report report=reportRepository.findByPatientPatientId(patientId)
+    public ImageDownloadDTO getReportPic(Long appointmentId) {
+        Report report=reportRepository.findByAppointmentAppointmentId(appointmentId)
                 .orElseThrow(()->new RuntimeException("Image not found"));
 
         Image image=this.imageRepository.findByReportReportId(report.getReportId())
                 .orElseThrow(()->new RuntimeException("Image not found"));
+
         try{
             MediaType mediaType=this.getMediaType(image.getFileName());
             Resource resource=new UrlResource(this.generatedFilePath(image.getFileName()).toUri());
@@ -208,31 +252,20 @@ public class FileServiceImpl implements FileService {
             throw new RuntimeException("File read error");
         }
     }
-
-    @Override
-    public ImageDownloadDTO downloadFile(Long imageId) {
-        Image image=this.imageRepository.findById(imageId)
-                .orElseThrow(()->new RuntimeException("Image not found"));
-        try{
-            MediaType mediaType=this.getMediaType(image.getFileName());
-            Resource resource=new UrlResource(this.generatedFilePath(image.getFileName()).toUri());
-            return new ImageDownloadDTO(resource,mediaType);
-        }
-        catch (IOException exception){
-            throw new RuntimeException("File read error");
-        }
-    }
-    //to get patient profile pic
-
-
     private MediaType getMediaType(String fileName){
         int index=fileName.lastIndexOf('.');
         String extension=fileName.substring(index+1);
 
-        if(extension.equals("png")){
-            return MediaType.IMAGE_PNG;
-        } else if (extension.equals("jpeg")||extension.equals("jpg") ) {
-            return MediaType.IMAGE_JPEG;
+        switch (extension) {
+            case "png" -> {
+                return MediaType.IMAGE_PNG;
+            }
+            case "jpeg", "jpg" -> {
+                return MediaType.IMAGE_JPEG;
+            }
+            case "pdf" -> {
+                return MediaType.APPLICATION_PDF;
+            }
         }
         throw new RuntimeException("Invalid Media Type");
     }
@@ -240,7 +273,8 @@ public class FileServiceImpl implements FileService {
     private Boolean isFileValid(MultipartFile file){
         return Objects.equals(file.getContentType(),"image/png")||
                 Objects.equals(file.getContentType(),"image/jpeg")||
-                Objects.equals(file.getContentType(),"image/jpg");
+                Objects.equals(file.getContentType(),"image/jpg")||
+                Objects.equals(file.getContentType(),"application/pdf");
     }
     private Path generatedFilePath(String fileName){
         return Paths.get(uploadPath+ File.separator+fileName).toAbsolutePath();

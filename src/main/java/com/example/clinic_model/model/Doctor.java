@@ -35,7 +35,7 @@ public class Doctor extends User
     private List<Appointment> appointments;
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "doctor_department",
             joinColumns = @JoinColumn(name = "doctor_id"),
@@ -43,9 +43,6 @@ public class Doctor extends User
     )
     private List<Department> departments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "doctor")
-    @JsonBackReference
-    private List<Report> reports;
 
     @OneToOne(mappedBy = "doctor")
     @JsonBackReference

@@ -29,7 +29,8 @@ public class ReportDTO {
 
 
     //relations
-    private PatientDTO patient;
-    private DoctorDTO doctor;
+
+    private AppointmentDTO appointment;
+
 
 }

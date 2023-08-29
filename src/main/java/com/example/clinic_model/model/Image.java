@@ -29,6 +29,11 @@ public class Image {
     @OneToOne
     @JoinColumn(name = "reportId")
     private Report report;
+
+    @OneToOne
+    @JoinColumn(name = "newsId")
+    private News news;
+
     public Image(String fileName){
         this.fileName=fileName;
     }

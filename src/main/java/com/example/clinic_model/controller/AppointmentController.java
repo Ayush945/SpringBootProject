@@ -33,7 +33,7 @@ public class AppointmentController {
     }
 
     //for admin to look at list of appointment
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/get-all-appointments")
     public List<AppointmentDTO> getAllAppointments() {
         return appointmentService.getAllAppointments();
@@ -59,6 +59,14 @@ public class AppointmentController {
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointmentById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // getting appointment history
+//    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
+    @GetMapping("get-appointment-history/doctor/{doctorId}")
+    public ResponseEntity<List<AppointmentDTO>> getPatientsWithPastAppointmentsForDoctor(@PathVariable Long doctorId) {
+        List<AppointmentDTO> appointmentHistory = this.appointmentService.getAppointmentHistory(doctorId);
+        return ResponseEntity.ok(appointmentHistory);
     }
 
 

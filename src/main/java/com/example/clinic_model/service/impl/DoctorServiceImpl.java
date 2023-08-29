@@ -34,6 +34,7 @@ public class DoctorServiceImpl implements DoctorService {
     public List<DoctorDTO> getAllDoctors() {
         List<Doctor> doctors = doctorRepository.findAll();
         return doctors.stream()
+                .filter(Doctor::isVerified) // Filter out the verified doctors
                 .map(doctor -> modelMapper.map(doctor, DoctorDTO.class))
                 .collect(Collectors.toList());
     }

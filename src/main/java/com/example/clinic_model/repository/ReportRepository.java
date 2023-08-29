@@ -9,5 +9,7 @@ import java.util.Optional;
 
 public interface ReportRepository extends JpaRepository<Report,Long> {
 
-    Optional<Report> findByPatientPatientId(Long patientId);
+
+
+    Optional<Report> findByAppointmentAppointmentId(Long appointmentId);
 }

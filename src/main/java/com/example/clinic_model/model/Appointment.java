@@ -27,6 +27,7 @@ public class Appointment
     private String email;
     private Long phoneNumber;
     private LocalDate dateOfBirth;
+
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
@@ -35,5 +36,7 @@ public class Appointment
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
+    @OneToOne(mappedBy = "appointment")
+    private Report report;
 
 }

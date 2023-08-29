@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,7 +63,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
 
-
     @Override
     public List<AppointmentDTO> getAllAppointments() {
         List<Appointment> appointments = appointmentRepository.findAll();
@@ -86,6 +86,27 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(appointment -> modelMapper.map(appointment, AppointmentDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public List<AppointmentDTO> getAppointmentHistory(Long doctorId) {
+        LocalDate currentDate = LocalDate.now();
+        List<Appointment> appointments = this.appointmentRepository
+                .findAllByAppointmentDateBeforeAndDoctorDoctorId(currentDate, doctorId);
+
+        List<AppointmentDTO> allAppointmentHistory = new ArrayList<>();
+        for (Appointment appointment : appointments) {
+            allAppointmentHistory.add(modelMapper.map(appointment, AppointmentDTO.class));
+        }
+
+        return allAppointmentHistory;
+    }
+
+    @Override
+    public AppointmentDTO getAppointmentById(Long appointmentId) {
+        Appointment appointment=appointmentRepository.findById(appointmentId)
+                .orElseThrow(()->new RuntimeException("Not found appointment"));
+        return modelMapper.map(appointment,AppointmentDTO.class);
+    }
+
 
     @Override
     public void deleteAppointmentById(Long appointmentId) {
