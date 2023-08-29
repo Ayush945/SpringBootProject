@@ -69,5 +69,11 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentHistory);
     }
 
+    @GetMapping("get-appointment/{appointmentId}")
+    public ResponseEntity<AppointmentDTO> getAppointmentByAppointmentId(@PathVariable Long appointmentId){
+        AppointmentDTO appointmentDTO=this.appointmentService.getAppointmentById(appointmentId);
+                return ResponseEntity.ok(appointmentDTO);
+    }
+
 
 }
