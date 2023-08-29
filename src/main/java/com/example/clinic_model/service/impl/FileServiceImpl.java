@@ -105,29 +105,42 @@ public class FileServiceImpl implements FileService {
     }
 
 //    Upload News Image
-   @Override
-    public ImageDTO uploadNewsImage(Long newsID,ImageDTO imageDTO) {
-        //getting patient
-        NewsDTO newsDTO=this.newsService.getNewsById(newsID);
-        News news=modelMapper.map(newsDTO,News.class);
+@Override
+public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
+    //getting patient
+    NewsDTO newsDTO = this.newsService.getNewsById(newsID);
+    News news = modelMapper.map(newsDTO, News.class);
+    MultipartFile file = imageDTO.getImage();
+    if (file.isEmpty()) throw new RuntimeException("File not found");
+    if (!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
+    String fileName = this.generateFileName(file);
+    Image savedImage;
 
-        MultipartFile file=imageDTO.getImage();
-        if(file.isEmpty()) throw new RuntimeException("File not found");
-        if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
-        String fileName =this.generateFileName(file);
-        Image savedImage;
-
-        try{
-            Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-            savedImage=this.imageRepository.save(new Image(fileName));
-            System.out.println(savedImage);
+    try {
+        Files.copy(file.getInputStream(), this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+        boolean exists = this.imageRepository.existsByNewsNewsId(newsID);
+        if (exists) {
+            Optional<Image> existingImage = this.imageRepository.findByNewsNewsId(newsID);
+            if (existingImage.isPresent()) {
+                Image image = existingImage.get();
+                // Update the image with the new file name
+                image.setFileName(fileName);
+                savedImage = this.imageRepository.save(image);
+            } else {
+                throw new RuntimeException("Existing image not found");
+            }
+        } else {
+            savedImage = this.imageRepository.save(new Image(fileName));
             savedImage.setNews(news);
-            System.out.println(savedImage);
         }
-        catch (IOException exception){
-            throw new RuntimeException("File upload Error");
-        }
-        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
+    } catch (IOException exception) {
+        throw new RuntimeException("File upload Error");
+    }
+    return ImageDTO.builder().imageId(savedImage.getImageId()).build();
+}
+
+    private void deleteImage(Long imageId) {
+        // Delete image logic here
     }
 
     //get patient profile pic
