@@ -16,4 +16,8 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
     Optional<Image> findByNewsNewsId(Long newsId);
     Optional<Image>findByReportReportId(Long reportId);
     boolean existsByNewsNewsId(Long newsId);
+    boolean existsByPatientPatientId(Long patientId);
+    boolean existsByDoctorDoctorId(Long doctorId);
+
+
 }

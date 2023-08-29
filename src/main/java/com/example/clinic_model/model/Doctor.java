@@ -35,7 +35,7 @@ public class Doctor extends User
     private List<Appointment> appointments;
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "doctor_department",
             joinColumns = @JoinColumn(name = "doctor_id"),
