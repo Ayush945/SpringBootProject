@@ -91,40 +91,40 @@ public class FileServiceImpl implements FileService {
         }
         return ImageDTO.builder().imageId(savedImage.getImageId()).build();
     }
-//    Upload News Image
-@Override
-public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
-    //getting patient
-    NewsDTO newsDTO = this.newsService.getNewsById(newsID);
-    News news = modelMapper.map(newsDTO, News.class);
-    MultipartFile file = imageDTO.getImage();
-    if (file.isEmpty()) throw new RuntimeException("File not found");
-    if (!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
-    String fileName = this.generateFileName(file);
-    Image savedImage;
+    //    Upload News Image
+    @Override
+    public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
+        //getting patient
+        NewsDTO newsDTO = this.newsService.getNewsById(newsID);
+        News news = modelMapper.map(newsDTO, News.class);
+        MultipartFile file = imageDTO.getImage();
+        if (file.isEmpty()) throw new RuntimeException("File not found");
+        if (!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
+        String fileName = this.generateFileName(file);
+        Image savedImage;
 
-    try {
-        Files.copy(file.getInputStream(), this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-        boolean exists = this.imageRepository.existsByNewsNewsId(newsID);
-        if (exists) {
-            Optional<Image> existingImage = this.imageRepository.findByNewsNewsId(newsID);
-            if (existingImage.isPresent()) {
-                Image image = existingImage.get();
-                // Update the image with the new file name
-                image.setFileName(fileName);
-                savedImage = this.imageRepository.save(image);
+        try {
+            Files.copy(file.getInputStream(), this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            boolean exists = this.imageRepository.existsByNewsNewsId(newsID);
+            if (exists) {
+                Optional<Image> existingImage = this.imageRepository.findByNewsNewsId(newsID);
+                if (existingImage.isPresent()) {
+                    Image image = existingImage.get();
+                    // Update the image with the new file name
+                    image.setFileName(fileName);
+                    savedImage = this.imageRepository.save(image);
+                } else {
+                    throw new RuntimeException("Existing image not found");
+                }
             } else {
-                throw new RuntimeException("Existing image not found");
+                savedImage = this.imageRepository.save(new Image(fileName));
+                savedImage.setNews(news);
             }
-        } else {
-            savedImage = this.imageRepository.save(new Image(fileName));
-            savedImage.setNews(news);
+        } catch (IOException exception) {
+            throw new RuntimeException("File upload Error");
         }
-    } catch (IOException exception) {
-        throw new RuntimeException("File upload Error");
+        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
     }
-    return ImageDTO.builder().imageId(savedImage.getImageId()).build();
-}
 
     private void deleteImage(Long imageId) {
         // Delete image logic here
@@ -145,7 +145,7 @@ public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
         }
     }
 
-//    Get News Image
+    //    Get News Image
     public ImageDownloadDTO getNewsImage(Long newsId) {
         Image image=this.imageRepository.findByNewsNewsId(newsId)
                 .orElseThrow(()->new RuntimeException("Image not found"));
@@ -256,10 +256,16 @@ public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
         int index=fileName.lastIndexOf('.');
         String extension=fileName.substring(index+1);
 
-        if(extension.equals("png")){
-            return MediaType.IMAGE_PNG;
-        } else if (extension.equals("jpeg")||extension.equals("jpg") ) {
-            return MediaType.IMAGE_JPEG;
+        switch (extension) {
+            case "png" -> {
+                return MediaType.IMAGE_PNG;
+            }
+            case "jpeg", "jpg" -> {
+                return MediaType.IMAGE_JPEG;
+            }
+            case "pdf" -> {
+                return MediaType.APPLICATION_PDF;
+            }
         }
         throw new RuntimeException("Invalid Media Type");
     }
@@ -267,7 +273,8 @@ public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
     private Boolean isFileValid(MultipartFile file){
         return Objects.equals(file.getContentType(),"image/png")||
                 Objects.equals(file.getContentType(),"image/jpeg")||
-                Objects.equals(file.getContentType(),"image/jpg");
+                Objects.equals(file.getContentType(),"image/jpg")||
+                Objects.equals(file.getContentType(),"application/pdf");
     }
     private Path generatedFilePath(String fileName){
         return Paths.get(uploadPath+ File.separator+fileName).toAbsolutePath();
