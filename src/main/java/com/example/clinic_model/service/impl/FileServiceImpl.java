@@ -57,25 +57,6 @@ public class FileServiceImpl implements FileService {
     @Autowired
     private ReportService reportService;
 
-    //upload file test
-    @Override
-    public ImageDTO uploadFile(ImageDTO imageDTO) {
-        MultipartFile file=imageDTO.getImage();
-        if(file.isEmpty()) throw new RuntimeException("File not found");
-        if(!this.isFileValid(file)) throw new RuntimeException("Unsupported Format");
-        String fileName =this.generateFileName(file);
-        Image savedImage;
-        try{
-            Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-            savedImage=this.imageRepository.save(new Image(fileName));
-        }
-        catch (IOException exception){
-            throw new RuntimeException("File upload Error");
-        }
-        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
-    }
-
-
     //test method->to upload patient profile pic
     @Override
     public ImageDTO uploadPatientProfilePic(Long patientID, ImageDTO imageDTO) {
@@ -242,9 +223,7 @@ public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
         Image savedImage;
 
         try{
-            System.out.println("hello there");
             Files.copy(file.getInputStream(),this.generatedFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("bye there");
             savedImage=this.imageRepository.save(new Image(fileName));
             savedImage.setReport(report);
 
@@ -257,12 +236,13 @@ public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
 
     //to get report pic
     @Override
-    public ImageDownloadDTO getReportPic(Long patientId) {
-        Report report=reportRepository.findByPatientPatientId(patientId)
+    public ImageDownloadDTO getReportPic(Long appointmentId) {
+        Report report=reportRepository.findByAppointmentAppointmentId(appointmentId)
                 .orElseThrow(()->new RuntimeException("Image not found"));
 
         Image image=this.imageRepository.findByReportReportId(report.getReportId())
                 .orElseThrow(()->new RuntimeException("Image not found"));
+
         try{
             MediaType mediaType=this.getMediaType(image.getFileName());
             Resource resource=new UrlResource(this.generatedFilePath(image.getFileName()).toUri());
@@ -272,23 +252,6 @@ public ImageDTO uploadNewsImage(Long newsID, ImageDTO imageDTO) {
             throw new RuntimeException("File read error");
         }
     }
-
-    @Override
-    public ImageDownloadDTO downloadFile(Long imageId) {
-        Image image=this.imageRepository.findById(imageId)
-                .orElseThrow(()->new RuntimeException("Image not found"));
-        try{
-            MediaType mediaType=this.getMediaType(image.getFileName());
-            Resource resource=new UrlResource(this.generatedFilePath(image.getFileName()).toUri());
-            return new ImageDownloadDTO(resource,mediaType);
-        }
-        catch (IOException exception){
-            throw new RuntimeException("File read error");
-        }
-    }
-    //to get patient profile pic
-
-
     private MediaType getMediaType(String fileName){
         int index=fileName.lastIndexOf('.');
         String extension=fileName.substring(index+1);

@@ -100,6 +100,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         return allAppointmentHistory;
     }
 
+    @Override
+    public AppointmentDTO getAppointmentById(Long appointmentId) {
+        Appointment appointment=appointmentRepository.findById(appointmentId)
+                .orElseThrow(()->new RuntimeException("Not found appointment"));
+        return modelMapper.map(appointment,AppointmentDTO.class);
+    }
+
 
     @Override
     public void deleteAppointmentById(Long appointmentId) {

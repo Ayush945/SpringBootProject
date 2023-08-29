@@ -3,6 +3,10 @@ package com.example.clinic_model.controller;
 import com.example.clinic_model.dto.ImageDTO;
 import com.example.clinic_model.dto.ImageDownloadDTO;
 import com.example.clinic_model.dto.ReportDTO; // Import the ReportDTO class
+import com.example.clinic_model.model.Image;
+import com.example.clinic_model.model.Report;
+import com.example.clinic_model.repository.ImageRepository;
+import com.example.clinic_model.repository.ReportRepository;
 import com.example.clinic_model.service.FileService;
 import com.example.clinic_model.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
-
     private final ReportService reportService;
     @Autowired
     private FileService fileService;
@@ -38,9 +42,9 @@ public class ReportController {
         return ResponseEntity.ok(reportDTO);
     }
 
-    @PostMapping("/create-report/{patientId}")
-    public ResponseEntity<ReportDTO> createReport(@PathVariable("patientId") Long patientId) {
-        ReportDTO createdReport = reportService.createReport(patientId);
+    @PostMapping("/create-report/{appointmentId}")
+    public ResponseEntity<ReportDTO> createReport(@PathVariable("appointmentId") Long appointmentId) {
+        ReportDTO createdReport = reportService.createReport(appointmentId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
     }
 
@@ -51,9 +55,9 @@ public class ReportController {
     }
 
 
-    @GetMapping("/get-report-pic/{patientId}")
-    ResponseEntity<Resource> getProfilePic(@PathVariable("patientId") Long patientId){
-        ImageDownloadDTO imageDownloadDTO=this.fileService.getReportPic(patientId);
+    @GetMapping("/get-report-pic/{appointmentId}")
+    ResponseEntity<Resource> getProfilePic(@PathVariable("appointmentId") Long appointmentId){
+        ImageDownloadDTO imageDownloadDTO=this.fileService.getReportPic(appointmentId);
         return ResponseEntity.ok()
                 .contentType(imageDownloadDTO.getMediaType())
                 .body(imageDownloadDTO.getResource());

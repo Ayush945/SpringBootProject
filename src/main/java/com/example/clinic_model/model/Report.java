@@ -21,19 +21,11 @@ public class Report {
 
     private LocalDate reportDate;
 
-
-    @ManyToOne
-    @JoinColumn(name = "patient_id")
-    private Patient patient;
-
     @OneToOne(mappedBy = "report")
     @JsonBackReference
     private Image image;
 
-
-
-    @ManyToOne
-    @JoinColumn(name = "doctor_id")
-    private Doctor doctor;
-
+    @OneToOne
+    @JoinColumn(name = "appointment_id")
+    private Appointment appointment;
 }

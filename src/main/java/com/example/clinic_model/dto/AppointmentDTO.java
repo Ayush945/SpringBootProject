@@ -1,5 +1,6 @@
 package com.example.clinic_model.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +36,8 @@ public class AppointmentDTO {
     private LocalDate dateOfBirth;
 
     //relations
+    @JsonBackReference
+    private ReportDTO report;
     private DoctorDTO doctor; // Update field name to doctor_id
     private PatientDTO patient; // Update field name to patient_id
 }

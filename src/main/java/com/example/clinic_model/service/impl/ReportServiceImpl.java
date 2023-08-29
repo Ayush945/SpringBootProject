@@ -1,14 +1,13 @@
 package com.example.clinic_model.service.impl;
 
+import com.example.clinic_model.dto.AppointmentDTO;
 import com.example.clinic_model.dto.DoctorDTO;
 import com.example.clinic_model.dto.PatientDTO;
 import com.example.clinic_model.dto.ReportDTO;
 import com.example.clinic_model.exception.ResourceNotFoundException;
-import com.example.clinic_model.model.Doctor;
-import com.example.clinic_model.model.Image;
-import com.example.clinic_model.model.Patient;
-import com.example.clinic_model.model.Report;
+import com.example.clinic_model.model.*;
 import com.example.clinic_model.repository.ReportRepository;
+import com.example.clinic_model.service.AppointmentService;
 import com.example.clinic_model.service.DoctorService;
 import com.example.clinic_model.service.PatientService;
 import com.example.clinic_model.service.ReportService;
@@ -33,7 +32,7 @@ public class ReportServiceImpl implements ReportService {
     private DoctorService doctorService;
 
     @Autowired
-    private PatientService patientService;
+    private AppointmentService appointmentService;
 
     @Override
     public List<ReportDTO> getAllReports() {
@@ -51,12 +50,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public ReportDTO createReport(Long patientId) {
+    public ReportDTO createReport(Long appointmentId) {
         Report report=new Report();
-        PatientDTO patientDTO = this.patientService.getPatientById(patientId);
-        Patient patient = this.modelMapper.map(patientDTO, Patient.class);
-
-        report.setPatient(patient);
+        AppointmentDTO appointmentDTO=this.appointmentService.getAppointmentById(appointmentId);
+        Appointment appointment=this.modelMapper.map(appointmentDTO,Appointment.class);
+        System.out.println(appointment);
+        report.setAppointment(appointment);
+        System.out.println(report);
         report = reportRepository.save(report);
         return modelMapper.map(report, ReportDTO.class);
     }

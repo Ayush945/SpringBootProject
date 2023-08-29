@@ -43,9 +43,6 @@ public class Doctor extends User
     )
     private List<Department> departments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "doctor")
-    @JsonBackReference
-    private List<Report> reports;
 
     @OneToOne(mappedBy = "doctor")
     @JsonBackReference

@@ -41,11 +41,5 @@ public class Patient extends User
     @OneToOne(mappedBy = "patient")
     @JsonBackReference
     private Image image;
-
-
-    @OneToMany(mappedBy = "patient")
-    @JsonBackReference
-    private List<Report> reports;
-
 }
 
