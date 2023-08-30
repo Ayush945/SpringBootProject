@@ -83,7 +83,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<AppointmentDTO> getAppointmentByDoctorId(Long doctorId) {
         LocalDate currentDate = LocalDate.now();
         List<Appointment> appointments = this.appointmentRepository
-                .findAllByAppointmentDateAfterOrAppointmentDateEqualsAndDoctorDoctorId(currentDate, doctorId);
+                .findAllByAppointmentDateAfterOrAppointmentDateEqualsAndDoctorDoctorId(currentDate, currentDate, doctorId);
 
         List<AppointmentDTO> allDoctorAppointment = new ArrayList<>();
         for (Appointment appointment : appointments) {
