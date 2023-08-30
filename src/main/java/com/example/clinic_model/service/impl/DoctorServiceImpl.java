@@ -75,6 +75,9 @@ public class DoctorServiceImpl implements DoctorService {
         if (doctorDTO.getDoctorLicense() != null) {
             existingDoctor.setDoctorLicense(doctorDTO.getDoctorLicense());
         }
+        if (doctorDTO.getDoctorBio() != null) {
+            existingDoctor.setDoctorBio(doctorDTO.getDoctorBio());
+        }
         // Save the updated doctor
         Doctor updatedDoctor = doctorRepository.save(existingDoctor);
 
