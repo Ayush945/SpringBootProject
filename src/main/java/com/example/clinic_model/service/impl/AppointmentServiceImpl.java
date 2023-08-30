@@ -81,10 +81,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentDTO> getAppointmentByDoctorId(Long doctorId) {
-        List<Appointment> appointments = appointmentRepository.findByDoctorDoctorId(doctorId);
-        return appointments.stream()
-                .map(appointment -> modelMapper.map(appointment, AppointmentDTO.class))
-                .collect(Collectors.toList());
+        LocalDate currentDate = LocalDate.now();
+        List<Appointment> appointments = this.appointmentRepository
+                .findAllByAppointmentDateAfterOrAppointmentDateEqualsAndDoctorDoctorId(currentDate, doctorId);
+
+        List<AppointmentDTO> allDoctorAppointment = new ArrayList<>();
+        for (Appointment appointment : appointments) {
+            allDoctorAppointment.add(modelMapper.map(appointment, AppointmentDTO.class));
+        }
+
+        return allDoctorAppointment;
     }
 
     public List<AppointmentDTO> getAppointmentHistory(Long doctorId) {
