@@ -25,9 +25,6 @@ public class ReportDTO {
     private LocalDate reportDate;
 
 
-    private byte[] reportFile;
-
-
     //relations
 
     private AppointmentDTO appointment;

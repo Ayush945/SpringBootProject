@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,11 +52,13 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ReportDTO createReport(Long appointmentId) {
+        LocalDate currentDate =  LocalDate.now();
         Report report=new Report();
         AppointmentDTO appointmentDTO=this.appointmentService.getAppointmentById(appointmentId);
         Appointment appointment=this.modelMapper.map(appointmentDTO,Appointment.class);
         System.out.println(appointment);
         report.setAppointment(appointment);
+        report.setReportDate(currentDate);
         System.out.println(report);
         report = reportRepository.save(report);
         return modelMapper.map(report, ReportDTO.class);
