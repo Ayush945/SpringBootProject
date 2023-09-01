@@ -13,7 +13,6 @@ public interface PatientRepository extends JpaRepository<Patient,Long> {
     boolean existsByOtp(int Otp);
     Optional<Patient> findByOtp(int Otp);
 
-    @Query("SELECT COUNT(*) FROM Patient WHERE isVerified=true ")
-    Integer countAllPatient();
+    Integer countAllByIsVerifiedTrue();
     List<Patient>findByPatientNameStartingWith(String firstChar);
 }

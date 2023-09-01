@@ -103,4 +103,9 @@ public class PatientServiceImpl implements PatientService {
                 .collect(Collectors.toList());
 
     }
+    @Override
+    public Integer countAllVerifiedPatient() {
+        return patientRepository.countAllByIsVerifiedTrue();
+    }
+
 }

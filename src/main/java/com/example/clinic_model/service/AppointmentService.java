@@ -17,4 +17,6 @@ public interface AppointmentService {
     List<AppointmentDTO> getAppointmentHistory(Long doctorId);
 
     AppointmentDTO getAppointmentById(Long appointmentId);
+
+    Integer countDistinctPatientIdsByDoctorId(Long doctorId);
 }

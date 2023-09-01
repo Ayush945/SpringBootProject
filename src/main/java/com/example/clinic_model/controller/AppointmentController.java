@@ -75,5 +75,11 @@ public class AppointmentController {
                 return ResponseEntity.ok(appointmentDTO);
     }
 
+    @GetMapping("/count/treated-patient/{doctorId}")
+    public ResponseEntity<Integer> countDistinctPatientIdsByDoctorId(@PathVariable Long doctorId) {
+        Integer count = appointmentService.countDistinctPatientIdsByDoctorId(doctorId);
+        return ResponseEntity.ok(count);
+    }
+
 
 }

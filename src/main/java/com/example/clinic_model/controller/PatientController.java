@@ -68,4 +68,10 @@ public class PatientController {
     ResponseEntity<List<PatientDTO>>searchPatientStartingWith(@PathVariable("firstChar") String firstChar){
         return ResponseEntity.ok( ).body(patientService.searchPatientStartingWith(firstChar));
     }
+
+    @GetMapping("/count/verified")
+    public ResponseEntity<Integer> countAllVerifiedPatients() {
+        Integer count = patientService.countAllVerifiedPatient();
+        return ResponseEntity.ok(count);
+    }
 }

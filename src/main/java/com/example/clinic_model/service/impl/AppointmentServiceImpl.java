@@ -133,5 +133,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Integer countDistinctPatientIdsByDoctorId(Long doctorId) {
+        return appointmentRepository.countDistinctPatientIdsByDoctorId(doctorId);
+    }
+
 
 }
