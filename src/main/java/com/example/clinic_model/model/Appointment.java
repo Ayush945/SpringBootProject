@@ -21,7 +21,6 @@ public class Appointment
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
     private String appointmentDescription;
-    private String appointmentStatus;
     private String category;
     private String name;
     private String email;
