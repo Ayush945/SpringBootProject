@@ -40,7 +40,7 @@ public class AppointmentController {
     }
 
     //for patient to look at his list of appointment
-    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+//    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<AppointmentDTO>>getAppointmentByPatientId(@PathVariable Long patientId) {
         List<AppointmentDTO> appointmentDTO = appointmentService.getAppointmentByPatientId(patientId);
@@ -62,7 +62,7 @@ public class AppointmentController {
     }
 
     // getting appointment history
-//    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     @GetMapping("get-appointment-history/doctor/{doctorId}")
     public ResponseEntity<List<AppointmentDTO>> getPatientsWithPastAppointmentsForDoctor(@PathVariable Long doctorId) {
         List<AppointmentDTO> appointmentHistory = this.appointmentService.getAppointmentHistory(doctorId);
