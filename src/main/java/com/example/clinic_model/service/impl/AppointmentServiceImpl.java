@@ -138,5 +138,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentRepository.countDistinctPatientIdsByDoctorId(doctorId);
     }
 
+    @Override
+    public Integer countAppointmentsForToday() {
+        return appointmentRepository.countByAppointmentDate(LocalDate.now());
+    }
+
+
+
+
+
 
 }

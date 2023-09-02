@@ -19,4 +19,6 @@ public interface AppointmentService {
     AppointmentDTO getAppointmentById(Long appointmentId);
 
     Integer countDistinctPatientIdsByDoctorId(Long doctorId);
+
+    Integer countAppointmentsForToday();
 }

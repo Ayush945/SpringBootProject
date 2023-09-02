@@ -81,5 +81,11 @@ public class AppointmentController {
         return ResponseEntity.ok(count);
     }
 
+    @GetMapping("/today-count")
+    public ResponseEntity<Integer> countAppointmentsForToday() {
+        Integer count=appointmentService.countAppointmentsForToday();
+        return ResponseEntity.ok(count);
+    }
+
 
 }
