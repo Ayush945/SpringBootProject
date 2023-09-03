@@ -33,7 +33,6 @@ public class DoctorController {
         return doctorService.getAllDoctors();
     }
 
-
     @GetMapping("get-doctor/{doctorId}")
     public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable Long doctorId) {
         DoctorDTO doctorDTO = doctorService.getDoctorById(doctorId);
@@ -77,10 +76,4 @@ public class DoctorController {
         return doctorService.getUnverifiedDoctor();
     }
 
-
-    @GetMapping("/count-verified")
-    public ResponseEntity<Integer> getCountOfVerifiedDoctors() {
-        Integer count = doctorService.getCountOfVerifiedDoctors();
-        return ResponseEntity.ok(count);
-    }
 }

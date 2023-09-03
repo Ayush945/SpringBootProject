@@ -24,14 +24,13 @@ public class AppointmentController {
     //create appointment using both doctor and patient
 
     @PreAuthorize("hasAuthority('ROLE_PATIENT')")
-    @PostMapping("/patient/{patientId}/doctor/{doctorId}")
+    @PostMapping("/patient/{patientId}")
     public ResponseEntity<AppointmentDTO> createAppointment(@Valid @RequestBody AppointmentDTO appointmentDTO,
-                                                            @PathVariable("patientId") Long patientId,
-                                                            @PathVariable("doctorId") Long doctorId){
-        AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO, patientId, doctorId);
+                                                            @PathVariable("patientId") Long patientId) {
+        AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO, patientId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAppointment);
     }
-
+    
     //for admin to look at list of appointment
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/get-all-appointments")

@@ -3,6 +3,7 @@ package com.example.clinic_model.service.impl;
 import com.example.clinic_model.dto.AppointmentDTO;
 import com.example.clinic_model.dto.DoctorDTO;
 import com.example.clinic_model.dto.PatientDTO;
+import com.example.clinic_model.exception.IllegalAppointmentException;
 import com.example.clinic_model.exception.ResourceNotFoundException;
 import com.example.clinic_model.model.Appointment;
 import com.example.clinic_model.model.Doctor;
@@ -18,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,25 +38,41 @@ public class AppointmentServiceImpl implements AppointmentService {
     private DoctorService doctorService;
 
     @Override
-    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, Long patientId, Long doctorId) {
+    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, Long patientId) {
         Appointment appointment = modelMapper.map(appointmentDTO, Appointment.class);
-
-        DoctorDTO doctorDTO = this.doctorService.getDoctorById(doctorId);
-        Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
 
         PatientDTO patientDTO = this.patientService.getPatientById(patientId);
         Patient patient = modelMapper.map(patientDTO, Patient.class);
 
         try {
-            appointment.setPatient(patient);
-            appointment.setDoctor(doctor);
+            System.out.println("hehe");
+            List<DoctorDTO> verifiedDoctors = this.doctorService.getVerifiedDoctors();
+            int numberOfDoctors = verifiedDoctors.size();
+            System.out.println(numberOfDoctors);
 
-            Appointment savedAppointment = this.appointmentRepository.save(appointment);
-            return modelMapper.map(savedAppointment, AppointmentDTO.class);
+            if (numberOfDoctors > 0) {
+                // Fetch the count of verified doctors using the service method
+                int countOfVerifiedDoctors = this.doctorService.getCountOfVerifiedDoctors();
+
+                // Generate a random doctorId based on the count of verified doctors
+                Random random = new Random();
+                int randomDoctorIndex = random.nextInt(countOfVerifiedDoctors);
+                DoctorDTO doctorDTO = verifiedDoctors.get(randomDoctorIndex);
+                Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
+
+                appointment.setPatient(patient);
+                appointment.setDoctor(doctor);
+
+                Appointment savedAppointment = this.appointmentRepository.save(appointment);
+                return modelMapper.map(savedAppointment, AppointmentDTO.class);
+            }
+            else {
+                System.out.println("else part");
+                throw new IllegalAppointmentException("No verified doctors available to create an appointment.");
+            }
+
         } catch (Exception e) {
-            // Handle any exceptions that may occur during saving the appointment
-            // For example:
-            throw new IllegalArgumentException("Failed to create appointment");
+            throw new IllegalAppointmentException("Error Creating Appointment, No verified doctors Or Other Reasons");
         }
     }
 

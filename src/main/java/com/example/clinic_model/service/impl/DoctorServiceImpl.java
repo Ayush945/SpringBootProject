@@ -101,6 +101,16 @@ public class DoctorServiceImpl implements DoctorService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<DoctorDTO> getVerifiedDoctors() {
+        List<Doctor> doctors = doctorRepository.findAll();
+
+        return doctors.stream()
+                .filter(Doctor::isVerified)
+                .map(doctor -> modelMapper.map(doctor, DoctorDTO.class))
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public Integer getCountOfVerifiedDoctors() {

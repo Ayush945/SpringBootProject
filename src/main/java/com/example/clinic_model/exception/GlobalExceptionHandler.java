@@ -21,6 +21,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessageDTO> handleLoginException(LoginException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDTO(ex.getMessage()));
     }
+    @ExceptionHandler(IllegalAppointmentException.class)
+    public ResponseEntity<ErrorMessageDTO> IllegalAppointmentException(IllegalAppointmentException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDTO(ex.getMessage()));
+    }
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ErrorMessageDTO> handleExpiredJwtException(ExpiredJwtException ex) {

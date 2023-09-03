@@ -19,6 +19,6 @@ public class ClinicModelApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 
-		this.authenticationService.createAdmin();
+//		this.authenticationService.createAdmin();
 	}
 }
