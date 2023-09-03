@@ -11,5 +11,7 @@ public interface DoctorService {
     DoctorDTO updateDoctor(Long doctorId, DoctorDTO doctorDTO);
     void deleteDoctorById(Long id);
     List<DoctorDTO>getUnverifiedDoctor();
+
+    Integer getCountOfVerifiedDoctors();
 }
 

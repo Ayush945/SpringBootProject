@@ -76,4 +76,11 @@ public class DoctorController {
     public List<DoctorDTO> getUnverifiedDoctors() {
         return doctorService.getUnverifiedDoctor();
     }
+
+
+    @GetMapping("/count-verified")
+    public ResponseEntity<Integer> getCountOfVerifiedDoctors() {
+        Integer count = doctorService.getCountOfVerifiedDoctors();
+        return ResponseEntity.ok(count);
+    }
 }

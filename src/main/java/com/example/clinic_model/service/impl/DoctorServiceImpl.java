@@ -100,4 +100,10 @@ public class DoctorServiceImpl implements DoctorService {
                 .map(doctor -> modelMapper.map(doctor, DoctorDTO.class))
                 .collect(Collectors.toList());
     }
+
+
+    @Override
+    public Integer getCountOfVerifiedDoctors() {
+        return doctorRepository.countByIsVerifiedTrue();
+    }
 }

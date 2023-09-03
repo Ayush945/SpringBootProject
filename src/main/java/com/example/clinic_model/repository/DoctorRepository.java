@@ -12,4 +12,6 @@ public interface DoctorRepository extends JpaRepository<Doctor,Long> {
     @Query("SELECT COUNT(*) FROM Doctor")
     Integer countAllDoctor();
 
+    Integer countByIsVerifiedTrue();
+
 }
