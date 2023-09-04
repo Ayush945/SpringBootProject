@@ -5,7 +5,8 @@ import com.example.clinic_model.dto.AppointmentDTO;
 import java.util.List;
 
 public interface AppointmentService {
-    AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, Long patientId);
+    AppointmentDTO createAppointmentPatientId(AppointmentDTO appointmentDTO, Long patientId);
+    AppointmentDTO createAppointmentPatientDoctorId(AppointmentDTO appointmentDTO, Long patientId, Long doctorId);
     List<AppointmentDTO> getAllAppointments();
     List<AppointmentDTO> getAppointmentByPatientId(Long appointmentId);
     void deleteAppointmentById(Long appointmentId);

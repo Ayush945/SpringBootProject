@@ -38,7 +38,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private DoctorService doctorService;
 
     @Override
-    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, Long patientId) {
+    public AppointmentDTO createAppointmentPatientId(AppointmentDTO appointmentDTO, Long patientId) {
         Appointment appointment = modelMapper.map(appointmentDTO, Appointment.class);
 
         PatientDTO patientDTO = this.patientService.getPatientById(patientId);
@@ -73,6 +73,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         } catch (Exception e) {
             throw new IllegalAppointmentException("Error Creating Appointment, No verified doctors Or Other Reasons");
+        }
+    }
+
+    @Override
+    public AppointmentDTO createAppointmentPatientDoctorId(AppointmentDTO appointmentDTO, Long patientId, Long doctorId) {
+        Appointment appointment = modelMapper.map(appointmentDTO, Appointment.class);
+
+        DoctorDTO doctorDTO = this.doctorService.getDoctorById(doctorId);
+        Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
+
+        PatientDTO patientDTO = this.patientService.getPatientById(patientId);
+        Patient patient = modelMapper.map(patientDTO, Patient.class);
+
+        try {
+            appointment.setPatient(patient);
+            appointment.setDoctor(doctor);
+
+            Appointment savedAppointment = this.appointmentRepository.save(appointment);
+            return modelMapper.map(savedAppointment, AppointmentDTO.class);
+        } catch (Exception e) {
+            // Handle any exceptions that may occur during saving the appointment
+            // For example:
+            throw new IllegalArgumentException("Failed to create appointment");
         }
     }
 

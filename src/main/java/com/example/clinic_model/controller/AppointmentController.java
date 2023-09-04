@@ -25,11 +25,20 @@ public class AppointmentController {
 
     @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     @PostMapping("/patient/{patientId}")
-    public ResponseEntity<AppointmentDTO> createAppointment(@Valid @RequestBody AppointmentDTO appointmentDTO,
+    public ResponseEntity<AppointmentDTO> createAppointmentPatient(@Valid @RequestBody AppointmentDTO appointmentDTO,
                                                             @PathVariable("patientId") Long patientId) {
-        AppointmentDTO createdAppointment = appointmentService.createAppointment(appointmentDTO, patientId);
+        AppointmentDTO createdAppointment = appointmentService.createAppointmentPatientId(appointmentDTO, patientId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAppointment);
     }
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+    @PostMapping("/patient/{patientId}/doctor/{doctorId}")
+    public ResponseEntity<AppointmentDTO> createAppointment(@Valid @RequestBody AppointmentDTO appointmentDTO,
+                                                            @PathVariable("patientId") Long patientId,
+                                                            @PathVariable("doctorId") Long doctorId){
+        AppointmentDTO createdAppointment = appointmentService.createAppointmentPatientDoctorId(appointmentDTO, patientId, doctorId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAppointment);
+    }
+
     
     //for admin to look at list of appointment
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
