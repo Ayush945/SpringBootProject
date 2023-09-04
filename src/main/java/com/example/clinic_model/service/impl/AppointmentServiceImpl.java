@@ -45,29 +45,46 @@ public class AppointmentServiceImpl implements AppointmentService {
         Patient patient = modelMapper.map(patientDTO, Patient.class);
 
         try {
-            System.out.println("hehe");
-            List<DoctorDTO> verifiedDoctors = this.doctorService.getVerifiedDoctors();
-            int numberOfDoctors = verifiedDoctors.size();
-            System.out.println(numberOfDoctors);
+//            int numberOfDoctors = verifiedDoctors.size();
+            int countOfVerifiedDoctors = this.doctorService.getCountOfVerifiedDoctors();
 
-            if (numberOfDoctors > 0) {
+            if (countOfVerifiedDoctors > 0) {
                 // Fetch the count of verified doctors using the service method
-                int countOfVerifiedDoctors = this.doctorService.getCountOfVerifiedDoctors();
+//                int countOfVerifiedDoctors = this.doctorService.getCountOfVerifiedDoctors();
 
-                // Generate a random doctorId based on the count of verified doctors
+                // Define a maximum number of retries to avoid an infinite loop
+                int maxRetries = 3;
+                int retries = 0;
+
                 Random random = new Random();
-                int randomDoctorIndex = random.nextInt(countOfVerifiedDoctors);
-                DoctorDTO doctorDTO = verifiedDoctors.get(randomDoctorIndex);
-                Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
+                DoctorDTO selectedDoctor = null;
+                List<DoctorDTO> verifiedDoctors = this.doctorService.getVerifiedDoctors();
 
-                appointment.setPatient(patient);
-                appointment.setDoctor(doctor);
+                while (retries < maxRetries) {
+                    int randomDoctorIndex = random.nextInt(countOfVerifiedDoctors);
+                    selectedDoctor = verifiedDoctors.get(randomDoctorIndex);
 
-                Appointment savedAppointment = this.appointmentRepository.save(appointment);
-                return modelMapper.map(savedAppointment, AppointmentDTO.class);
-            }
-            else {
-                System.out.println("else part");
+                    // Check if the selected doctor is verified
+                    if (selectedDoctor.isVerified()) {
+                        break;  // Exit the loop if the doctor is verified
+                    }
+
+                    retries++;
+                }
+
+                if (selectedDoctor != null && selectedDoctor.isVerified()) {
+                    // A verified doctor has been selected, proceed with appointment creation
+                    Doctor doctor = modelMapper.map(selectedDoctor, Doctor.class);
+
+                    appointment.setPatient(patient);
+                    appointment.setDoctor(doctor);
+
+                    Appointment savedAppointment = this.appointmentRepository.save(appointment);
+                    return modelMapper.map(savedAppointment, AppointmentDTO.class);
+                } else {
+                    throw new IllegalAppointmentException("No verified doctors available to create an appointment.");
+                }
+            } else {
                 throw new IllegalAppointmentException("No verified doctors available to create an appointment.");
             }
 
